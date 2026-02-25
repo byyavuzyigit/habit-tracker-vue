@@ -1,6 +1,6 @@
 import {db} from './firebase';
 import {collection, addDoc, doc, updateDoc, deleteDoc, 
-    query, where, orderBy, serverTimestamp, onSnapshot} from 'firebase/firestore';
+    query, where, orderBy, serverTimestamp, onSnapshot, getDoc} from 'firebase/firestore';
 
 // firestore path: users/{uid}/groups
 function groupsCol(uid){
@@ -57,4 +57,12 @@ export async function setGroupStatus(uid, groupId, newStatus){
 export async function removeGroup(uid, groupId){
     const ref = doc(db, 'users', uid, 'groups', groupId);
     return deleteDoc(ref);
+}
+
+// fetch a single group by id
+export async function getGroupById(uid, groupId){
+    const ref = doc(db, 'users', uid, 'groups', groupId);
+    const snap = await getDoc(ref);
+    if (!snap.exists()) return null;
+    return {id: snap.id, ...snap.data()};
 }
